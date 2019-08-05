@@ -4,7 +4,7 @@ import configparser
 root_dir = os.path.dirname(os.path.abspath('.'))
 cf = configparser.ConfigParser()
 
-cf.read(root_dir + '/config.ini')
+cf.read(root_dir + '/nexus_backup/config.cfg')
 
 vip = cf.get("Platform", "vip")
 port = cf.get("platform", "port")
