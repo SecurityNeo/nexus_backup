@@ -1,6 +1,6 @@
 import os
 import requests
-from gevent import monkey
+from gevent import monkey, spawn
 from gevent.pool import Pool
 
 from common.readingconfig import backup_dir
@@ -22,7 +22,8 @@ def download(download_url, path, md5):
                   "in the nexus is {expect_md5}, delete the old file")\
                 .format(file=target_file, ac_md5=actually_md5, expect_md5=md5)
             os.remove(target_file)
-    if os.path.exists(path):
+    path = os.path.split(target_file)[0]
+    if not path:
         os.mkdir(path)
     rep = requests.get(download_url, stream=True)
     with open(target_file, 'wb') as f:
@@ -35,5 +36,5 @@ def run():
     assets = grab_components()
     pool = Pool(size=5)
     for asset in assets:
-        pool.add(download, asset["download_url"], asset["path"], asset["md5"])
+        pool.add(spawn(download, asset["download_url"], asset["path"], asset["md5"]))
     pool.join()
